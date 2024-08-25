@@ -1,1 +1,1 @@
-web: gunicorn travel_recommendation.wsgi --log-file -
+web: gunicorn mj_2nd_pj.wsgi --log-file -
