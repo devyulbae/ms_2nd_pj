@@ -1,1 +1,1 @@
-web: gunicorn my_own_j.wsgi --log-file -
+web: gunicorn ms_2nd_pj.wsgi --log-file -
