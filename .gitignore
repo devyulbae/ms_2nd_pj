@@ -1,0 +1,9 @@
+# Django 관련
+*.pyc
+__pycache__/
+db.sqlite3
+
+# 환경 변수 파일
+.env
+
+# 기타

@@ -1,0 +1,15 @@
+<!-- templates/recommendations/recommend_content.html -->
+<div class="recommendation-item" style="position: relative; display: flex; align-items: flex-start; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-color: #fafafa; margin-bottom: 20px;">
+    <!-- 이미지가 왼쪽에 위치 -->
+    <img src="{{ image_path }}" alt="{{ recommendations.name }}" style="width: 150px; height: 150px; border-radius: 8px; object-fit: cover; margin-right: 20px;">
+    
+    <!-- 텍스트 내용이 오른쪽에 위치하고 왼쪽 정렬 -->
+    <div style="flex: 1; text-align: left;">
+        <h2 style="margin: 0 0 10px; font-size: 24px; font-weight: bold; color: #333;">{{ recommendations.name }}</h2>
+        <p style="margin: 0 0 5px; font-size: 16px; color: #666;"><strong>위치:</strong> {{ recommendations.location }}</p>
+        <p style="margin: 0; font-size: 16px; color: #444; line-height: 1.6;"><strong>리뷰:</strong> {{ recommendations.user_review }}</p>
+    </div>
+
+    <!-- 닫기 버튼이 박스의 오른쪽 위에 위치하도록 설정 -->
+    <button class="close-btn" style="position: absolute; top: 10px; right: 10px; background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">X</button>
+</div>
