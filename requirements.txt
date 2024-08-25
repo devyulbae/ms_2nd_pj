@@ -1,0 +1,14 @@
+# for railway
+gunicorn
+
+Django>=3.2,<4.0
+django-environ
+psycopg2-binary
+whitenoise
+PIL
+os
+openai
+dotenv
+sys
+json
+azure.identity
