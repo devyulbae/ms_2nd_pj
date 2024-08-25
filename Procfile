@@ -1,1 +1,1 @@
-web: gunicorn mj_2nd_pj.wsgi --log-file -
+web: gunicorn dong-main-app.wsgi --log-file -
