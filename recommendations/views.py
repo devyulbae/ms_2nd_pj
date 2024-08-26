@@ -10,7 +10,6 @@ from django.template.loader import render_to_string
 from link_image import link_image  # link_image 함수 가져오기
 
 RECOMMENDATION_HISTORY_KEY = 'recommendation_history'
-
 def recommend(request, category):
     latitude = request.GET.get('latitude')
     longitude = request.GET.get('longitude')
@@ -41,7 +40,6 @@ def recommend(request, category):
 
     # 일반 요청일 경우 전체 페이지 렌더링
     return render(request, 'recommendations/recommend.html', context)
-
 
 def index(request):
     return render(request, 'recommendations/index.html')
