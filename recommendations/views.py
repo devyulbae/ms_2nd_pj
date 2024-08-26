@@ -19,7 +19,7 @@ def recommend(request, category):
     if category not in recommendation_history:
         recommendation_history[category] = []
 
-    recommendations = get_recommendations(category,latitude,longitude,recommendation_history[category])
+    recommendations = get_recommendations(category, latitude, longitude, recommendation_history[category])
     
     recommendation_history[category].append(recommendations['name'])
     request.session[RECOMMENDATION_HISTORY_KEY] = recommendation_history
@@ -27,21 +27,21 @@ def recommend(request, category):
     # 이미지 경로 가져오기
     image_path = link_image(recommendations['name'])
 
-    # AJAX 요청인지 확인
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        # AJAX 요청일 경우 HTML만 반환
-        html = render_to_string('recommendations/recommend_content.html', {
-            'recommendations': recommendations,
-            'image_path': image_path  # 이미지 경로 전달
-        })
-        return JsonResponse({'html': html})
-
-    # 일반 요청일 경우 전체 페이지 렌더링
-    return render(request, 'recommendations/recommend.html', {
+    context = {
         'category': category,
         'recommendations': recommendations,
         'image_path': image_path  # 이미지 경로 전달
-    })
+    }
+
+    # AJAX 요청인지 확인
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        # AJAX 요청일 경우 HTML만 반환
+        html = render_to_string('recommendations/recommend_content.html', context)
+        return JsonResponse({'html': html})
+
+    # 일반 요청일 경우 전체 페이지 렌더링
+    return render(request, 'recommendations/recommend.html', context)
+
 
 def index(request):
     return render(request, 'recommendations/index.html')
