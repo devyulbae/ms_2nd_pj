@@ -1,0 +1,32 @@
+<div class="recommendation-card bg-white shadow-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-xl transform hover:-translate-y-1">
+    <img src="{{ image_path }}" alt="{{ recommendations.name }}" class="w-full h-48 object-cover">
+    <div class="p-6">
+      <h2 class="text-2xl font-bold mb-2 text-gray-800">{{ recommendations.name }}</h2>
+      <p class="text-gray-600 mb-4"><i class="fas fa-map-marker-alt mr-2"></i>{{ recommendations.location }}</p>
+      <p class="text-gray-700 mb-4">{{ recommendations.user_review }}</p>
+      <button id="showMapBtn" onclick="showDirections('{{ recommendations.location }}')" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105">
+        <i class="fas fa-map-marked-alt mr-2"></i>길찾기
+      </button>
+    </div>
+  </div>
+  
+  <script>
+  function showDirections(destination) {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const origin = position.coords.latitude + ',' + position.coords.longitude;
+        const mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+        window.open(mapUrl, '_blank');
+      }, function(error) {
+        console.error("Error getting location:", error);
+        alert("현재 위치를 가져올 수 없습니다. 기본 지도로 이동합니다.");
+        const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
+        window.open(mapUrl, '_blank');
+      });
+    } else {
+      alert("이 브라우저에서는 위치 정보를 지원하지 않습니다. 기본 지도로 이동합니다.");
+      const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
+      window.open(mapUrl, '_blank');
+    }
+  }
+  </script>
