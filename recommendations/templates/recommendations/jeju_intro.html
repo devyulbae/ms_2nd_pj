@@ -1,0 +1,300 @@
+<!-- \templates\recommendations\jeju_intro.html -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>나만의 J - 제주도 여행 플래너</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            color: #FF6B6B;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            animation: bounce 1s;
+        }
+        p {
+            color: #4A4A4A;
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .icon:hover {
+            transform: translateY(-5px);
+        }
+        .icon i {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: #4ECDC4;
+        }
+        .icon span {
+            margin-top: 0.5rem;
+            font-weight: bold;
+            color: #4A4A4A;
+        }
+        .features {
+            background-color: #FFF5E6;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        .features h2 {
+            color: #FF9F1C;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .features ul {
+            list-style-type: none;
+            padding: 0;
+            text-align: left;
+        }
+        .features li {
+            margin-bottom: 0.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .features li::before {
+            content: '🍊';
+            position: absolute;
+            left: 0;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background-color: #4ECDC4;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            margin: 0.5rem;
+            width: 45%; /* 버튼의 너비를 비율로 설정 */
+            max-width: 200px; /* 최대 너비를 제한 */
+            flex: 1; /* 동일한 비율로 크기를 차지 */
+        }
+        .btn:hover {
+            background-color: #45B7AA;
+            transform: scale(1.05);
+        }
+        .bg-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        .usage-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #60318d;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+        .usage-icon:hover {
+            transform: scale(1.1);
+        }
+        .popup {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background-color: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            transition: bottom 0.5s ease;
+            z-index: 1000;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .popup.show {
+            bottom: 0;
+        }
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .icon {
+            animation: float 3s ease-in-out infinite;
+        }
+        .icon:nth-child(2) { animation-delay: 0.2s; }
+        .icon:nth-child(3) { animation-delay: 0.4s; }
+        .icon:nth-child(4) { animation-delay: 0.6s; }
+        .icon:nth-child(5) { animation-delay: 0.8s; }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .usage-icon {
+            animation: pulse 2s infinite;
+        }
+    
+        /* 반응형 디자인 */
+        @media (max-width: 768px) {
+            .btn-group {
+                flex-direction: column;
+                align-items: center;
+            }
+    
+            .btn {
+                width: 80%; /* 작은 화면에서 버튼의 너비를 넓게 조정 */
+            }
+        }
+    </style>
+    
+</head>
+<body>
+    <div class="container animate__animated animate__fadeIn">
+        <div class="bg-animation">
+            <lottie-player src="https://assets2.lottiefiles.com/packages/lf20_jbrw3hcz.json" background="transparent" speed="0.5" style="width: 100%; height: 100%;" loop autoplay></lottie-player>
+        </div>
+        <h1 class="animate__animated animate__bounce">나만의 J</h1>
+        <p>아무 계획없이 여행을 떠나보세요</p>
+        
+        <div class="icon-grid">
+            <div class="icon animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                <i class="fas fa-umbrella-beach"></i>
+                <span>해변</span>
+            </div>
+            <div class="icon animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                <i class="fas fa-coffee"></i>
+                <span>카페</span>
+            </div>
+            <div class="icon animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                <i class="fas fa-utensils"></i>
+                <span>식당</span>
+            </div>
+            <div class="icon animate__animated animate__fadeInUp" style="animation-delay: 0.4s;">
+                <i class="fas fa-map-marked-alt"></i>
+                <span>관광지</span>
+            </div>
+            <div class="icon animate__animated animate__fadeInUp" style="animation-delay: 0.5s;">
+                <i class="fas fa-camera"></i>
+                <span>포토스팟</span>
+            </div>
+        </div>
+
+        <div class="features animate__animated animate__fadeInUp" style="animation-delay: 0.6s;">
+            <h2>제주 여행의 모든 것</h2>
+            <ul>
+                <li>현지인이 추천하는 숨은 명소</li>
+                <li>제주도의 계절별 매력 포인트</li>
+                <li>AI 기반 맞춤형 여행 코스 추천</li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <a href="{% url 'set_jeju_region' 'west' %}" class="btn animate__animated animate__fadeInUp" style="animation-delay: 0.8s;">서쪽으로 여행하기</a>
+            <a href="{% url 'set_jeju_region' 'east' %}" class="btn animate__animated animate__fadeInUp" style="animation-delay: 0.9s;">동쪽으로 여행하기</a>
+        </div>
+        
+    </div>
+    
+    <div class="usage-icon" id="usageIcon">
+        <i class="fas fa-question"></i>
+    </div>
+    
+    <div class="popup" id="usagePopup">
+        <div class="close-popup" id="closePopup">&times;</div>
+        <h2>이용 안내</h2>
+        <p>
+            원하는 여행 스타일에 맞춰 카테고리 아이콘을 선택하세요.<br>
+            <br>
+            "제주 동쪽으로 여행하기" 버튼을 클릭하시면 제주 동쪽의 추천 여행지를 확인하실 수 있으며,<br>
+            "제주 서쪽으로 여행하기" 버튼을 클릭하시면 제주 서쪽의 추천 여행지를 안내해드립니다.<br>
+            <br>
+            추가적으로 궁금한 사항이 있으시면 언제든지 <i class="fas fa-question-circle"></i> 버튼을 눌러 확인하실 수 있습니다.
+        </p>
+    </div>
+
+    <script>
+        document.querySelectorAll('.icon').forEach((icon, index) => {
+            icon.addEventListener('mouseenter', () => {
+                icon.classList.add('animate__pulse');
+            });
+            icon.addEventListener('mouseleave', () => {
+                icon.classList.remove('animate__pulse');
+            });
+            icon.style.animationDelay = `${index * 0.2}s`;
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const usageIcon = document.getElementById('usageIcon');
+            const usagePopup = document.getElementById('usagePopup');
+            const closePopup = document.getElementById('closePopup');
+            
+            usageIcon.addEventListener('click', function() {
+                usagePopup.classList.add('show');
+            });
+            
+            closePopup.addEventListener('click', function() {
+                usagePopup.classList.remove('show');
+            });
+        });
+    </script>
+</body>
+</html>
