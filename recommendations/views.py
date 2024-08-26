@@ -47,6 +47,7 @@ def recommend(request, category):
         html = render_to_string('recommendations/recommend_content.html', context)
         return JsonResponse({'html': html})
 
+    # 일반 요청일 경우 전체 페이지 렌더링
     return render(request, 'recommendations/recommend.html', context)
 
 def index(request):
