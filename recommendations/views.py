@@ -8,7 +8,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from link_image import link_image  # link_image 함수 가져오기
-<<<<<<< HEAD
 from dotenv import load_dotenv
 
 # .env 파일 불러오기
@@ -16,8 +15,6 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG') == 'True'
-=======
->>>>>>> a5da51b (main)
 
 RECOMMENDATION_HISTORY_KEY = 'recommendation_history'
 
@@ -70,11 +67,8 @@ def get_recommendations(category, latitude, longitude, previous_recommendations)
     endpoint = os.getenv("ENDPOINT_URL", "https://ojo-ai-services2.openai.azure.com/")
     deployment = os.getenv("DEPLOYMENT_NAME", "gpt-4o")
     search_endpoint = os.getenv("SEARCH_ENDPOINT", "https://ojo-ai-search.search.windows.net")
-<<<<<<< HEAD
     search_key = SECRET_KEY
-=======
     search_key = os.getenv("SEARCH_KEY", "LAQvu2gep6KC8cgg7XfubtflXmPXmkV2BdERHjGx4mAzSeBkrPgB")
->>>>>>> a5da51b (main)
     search_index = os.getenv("SEARCH_INDEX_NAME", "jeju")
 
     token_provider = get_bearer_token_provider(
