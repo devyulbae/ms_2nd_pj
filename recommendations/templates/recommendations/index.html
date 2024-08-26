@@ -2,18 +2,6 @@
 <html lang="ko">
 
 <head>
-<<<<<<< HEAD
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>추천 관광지</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- Font Awesome 포함 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            margin: 0; 
-=======
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>나만의 J</title>
@@ -22,7 +10,6 @@
     <style>
         body {
             margin: 0;
->>>>>>> a5da51b (main)
             font-family: Arial, sans-serif;
             background: linear-gradient(to right, #40e0d0, #87ceeb);
             padding: 0;
@@ -34,23 +21,6 @@
             padding: 20px;
         }
 
-<<<<<<< HEAD
-        /* 반응형 박스 스타일링 */
-        .content-box {
-            width: 80%;
-            height: 600px;
-            margin: 40px auto;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            scroll-behavior: smooth;
-            background-color: #f8f9fa;
-            /* 박스 배경색 추가 */
-=======
         .content-box {
             width: 90%;
             height: 60vh;
@@ -62,22 +32,10 @@
             overflow-y: auto;
             scroll-behavior: smooth;
             background-color: #f8f9fa;
->>>>>>> a5da51b (main)
         }
 
         @media (max-width: 768px) {
             .content-box {
-<<<<<<< HEAD
-                width: 90%;
-                height: 500px;
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .content-box {
-                width: 70%;
-                height: 700px;
-=======
                 width: 95%;
                 height: 50vh;
                 padding: 5px;
@@ -85,7 +43,6 @@
 
             .recommendation-item {
                 height: 150px;
->>>>>>> a5da51b (main)
             }
         }
 
@@ -94,94 +51,12 @@
             bottom: 0;
             left: 0;
             width: 100%;
-<<<<<<< HEAD
-            padding: 10px 0;
-=======
             padding: 5px 0;
->>>>>>> a5da51b (main)
             background-color: white;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: space-around;
         }
-<<<<<<< HEAD
-        .button { 
-            margin: 0 10px; 
-            padding: 10px 20px; 
-            background-color: white; 
-            color: #333; 
-            border: none; 
-            border-radius: 10px;
-            text-align: center;
-            font-size: 0.9em;
-            display: block;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .button i {
-            font-size: 30px; /* 아이콘 크기 */
-            margin-bottom: 5px;
-            display: block;
-        }
-        .button:hover { 
-            background-color: #f0f0f0; 
-        }
-
-        .recommendation-item {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            background-color: #fafafa;
-            display: flex;
-            align-items: flex-start;
-        }
-
-        .recommendation-item img {
-            width: 150px;
-            height: 150px;
-            border-radius: 8px;
-            object-fit: cover; /* 이미지가 박스에 맞게 조절 */
-            margin-right: 20px;
-        }
-
-        .recommendation-item h2 {
-            margin: 0 0 10px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .recommendation-item p {
-            margin: 0 0 5px;
-            font-size: 16px;
-            color: #666;
-        }
-
-        .recommendation-item p:last-child {
-            margin: 0;
-            color: #444;
-            line-height: 1.6;
-        }
-
-        .remove-button {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: red;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 3px;
-            cursor: pointer;
-        }
-
-        .remove-button:hover {
-            background-color: darkred;
-=======
 
         .button {
             margin: 0 5px;
@@ -206,44 +81,12 @@
 
         .button:hover {
             background-color: #f0f0f0;
->>>>>>> a5da51b (main)
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-<<<<<<< HEAD
-        <h1>카테고리를 선택하여 추천을 받아보세요!</h1>
-
-        <!-- 반응형 박스 -->
-        <div class="content-box" id="results">
-            <!-- 추천 결과가 이 박스에 추가됩니다 -->
-        </div>
-
-        <!-- 박스 밖으로 버튼 이동, 화면 하단에 고정 -->
-        <div class="buttons">
-            <!-- 맛집 버튼을 이미지로 변경 -->
-            <button class="button" data-category="맛집">
-                <i class="fas fa-utensils"></i>
-                <span>맛집</span>
-            </button>
-            <button class="button" data-category="카페">
-                <i class="fas fa-coffee"></i>
-                <span>카페</span>
-            </button>
-            <button class="button" data-category="해변">
-                <i class="fas fa-umbrella-beach"></i>
-                <span>해변</span>
-            </button>
-            <button class="button" data-category="관광지">
-                <i class="fas fa-hiking"></i>
-                <span>관광지</span>
-            </button>
-            <button class="button" data-category="포토스팟">
-                <i class="fas fa-camera-retro"></i>
-                <span>포토스팟</span>
-=======
         <h1>나만의 J</h1>
         <div class="content-box" id="results">
             <!-- 추천 결과가 이 박스에 추가됩니다 -->
@@ -263,7 +106,6 @@
             </button>
             <button class="button" data-category="포토스팟">
                 <i class="fas fa-camera-retro"></i>
->>>>>>> a5da51b (main)
             </button>
         </div>
     </div>
@@ -304,14 +146,6 @@
                     },
                     success: function (response) {
                         var newItem = $(response.html);
-<<<<<<< HEAD
-                        var removeButton = $('<button class="remove-button">X</button>');
-                        removeButton.click(function () {
-                            newItem.remove();
-                        });
-                        newItem.append(removeButton);
-=======
->>>>>>> a5da51b (main)
                         $('#results').append(newItem);
                         $('#results').scrollTop($('#results')[0].scrollHeight);
                     },
