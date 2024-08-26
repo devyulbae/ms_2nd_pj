@@ -24,7 +24,7 @@
 
         .content-box {
             width: 90%;
-            height: 60vh;
+            height: 75vh;
             margin: 20px auto;
             padding: 10px;
             border: 1px solid #ddd;
@@ -156,6 +156,18 @@
                 });
             });
         });
+
+        function adjustContentBoxHeight() {
+            const headerHeight = document.querySelector('h1').offsetHeight;
+            const buttonHeight = document.querySelector('.buttons').offsetHeight;
+            const availableHeight = window.innerHeight - headerHeight - buttonHeight - 100; // 여백을 20px로 줄임
+            document.querySelector('.content-box').style.height = `${availableHeight}px`;
+        }
+
+        window.addEventListener('resize', adjustContentBoxHeight);
+        window.addEventListener('load', adjustContentBoxHeight);
+
+
     </script>
 </body>
 

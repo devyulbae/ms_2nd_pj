@@ -1,10 +1,10 @@
-<!-- templates/recommendations/recommend_content.html -->
 <div class="recommendation-item" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-image: url('{{ image_path }}'); background-size: cover; background-position: center; background-repeat: no-repeat; margin-bottom: 20px; color: white; text-align: center;">
   
-    <!-- 카테고리 텍스트가 박스의 왼쪽 위에 위치하도록 추가 -->
-    <div class="category-label" style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.6); color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
+    <!-- 카테고리 텍스트가 박스의 왼쪽 위에 위치하도록 수정 -->
+    <div class="category-label" style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.6); color: white; padding: 5px; border-radius: 4px; font-weight: bold; height: 32px; display: flex; align-items: center; justify-content: center; width: auto; white-space: nowrap;">
         {{ category }}
     </div>
+    
   
     <!-- 텍스트 내용이 가운데 정렬 -->
     <div style="flex: 1; text-align: center;">
@@ -13,12 +13,22 @@
         <p style="margin: 0; font-size: 16px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); line-height: 1.6;"><strong>리뷰:</strong> {{ recommendations.user_review }}</p>
     </div>
   
-    <!-- 닫기 버튼이 박스의 오른쪽 위에 위치하도록 설정 -->
-    <button class="close-btn" style="position: absolute; top: 10px; right: 10px; background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">X</button>
-    <button id="showMapBtn" onclick="showDirections('{{ recommendations.location }}')" style="position: absolute; bottom: 10px; right: 10px; background-color: #4CAF50; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);">
-        <i class="fas fa-map-marked-alt"></i> 길찾기
-    </button>
-  </div>
+    <!-- 읽어주기, 길찾기, 닫기 버튼이 오른쪽 위에 나란히 위치 -->
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
+        <button id="ttsBtn" onclick="readText('{{ recommendations.user_review }}')" style="background-color: #2196F3; color: white; padding: 5px; border: none; border-radius: 4px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-volume-up"></i>
+        </button>
+        <button id="showMapBtn" onclick="showDirections('{{ recommendations.location }}')" style="background-color: #4CAF50; color: white; padding: 5px; border: none; border-radius: 4px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-map-marked-alt"></i>
+        </button>
+        <button class="close-btn" style="background-color: red; color: white; border: none; padding: 5px; cursor: pointer; border-radius: 4px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+            X
+        </button>
+    </div>
+
+    <!-- Audio element to play TTS -->
+    <audio id="ttsAudio" controls style="display: none;"></audio>
+</div>
 
 <script>
   function showDirections(destination) {
@@ -40,7 +50,39 @@
       }
   }
 
+    function readText(text) {
+        fetch('/request-tts/', { // 실제 URL 패턴 사용
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.file_name) {
+                const audio = document.getElementById('ttsAudio');
+                audio.src = `/media/${data.file_name}`; // 수정된 부분: 오디오 파일 경로를 올바르게 지정합니다.
+                audio.style.display = 'block';
+                audio.play();
+            } else {
+                alert('오디오 파일을 생성할 수 없습니다.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('문제가 발생했습니다.');
+        });
+    }
+
   $(document).on('click', '.close-btn', function () {
       $(this).closest('.recommendation-item').remove();
   });
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.close-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                this.closest('.recommendation-item').remove();
+            });
+        });
+    });
 </script>

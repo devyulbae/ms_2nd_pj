@@ -3,12 +3,17 @@
 import sys
 import os
 import json
+import requests
 from openai import AzureOpenAI
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from link_image import link_image
+from django.views.decorators.csrf import csrf_exempt  # 추가된 import
+from link_image import link_image  # link_image 함수 가져오기
+from django.conf import settings  # settings 모듈 임포트 추가
+
 
 def jeju_intro(request):
     categories = ["맛집", "카페", "해변", "관광지", "포토스팟"]
@@ -128,3 +133,74 @@ def get_recommendations(category, latitude, longitude, previous_recommendations,
     print(data)
     # 반환된 데이터가 단일 객체이므로 리스트가 아닌 단일 객체로 반환
     return data
+    
+@csrf_exempt
+def request_tts_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        text = data.get('text', '')
+        
+        # TTS 요청 후 반환된 파일 이름을 받습니다.
+        file_name = request_tts(text)
+        
+        if file_name:
+            # 클라이언트에 반환할 때 정적 파일 경로를 추가하여 반환합니다.
+            return JsonResponse({'file_name': file_name})
+        else:
+            return JsonResponse({'error': 'Failed to generate audio'}, status=500)
+
+def get_token():
+    # Azure TTS API에 액세스하기 위해 토큰을 요청합니다.
+    endpoint = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken"
+    api_key = "288804c4918c4aa49f1285d49ea8df92"  # 여기에 실제 API 키를 입력하세요.
+
+    headers = {
+        "Ocp-Apim-Subscription-Key": api_key,
+    }
+    
+    response = requests.post(endpoint, headers=headers)
+    
+    if response.status_code == 200:
+        access_token = response.text
+        return access_token
+    else:
+        return ''
+
+def request_tts(text):
+    # Azure TTS API에 요청을 보내기 위해 액세스 토큰을 가져옵니다.
+    access_token = get_token()
+    if not access_token:
+        return None
+
+    tts_endpoint = "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1"
+    headers = {
+        "Content-Type": "application/ssml+xml",
+        "User-Agent": "testForEducation",
+        "X-Microsoft-OutputFormat": "riff-24khz-16bit-mono-pcm",
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    # SSML 데이터를 생성합니다.
+    ssml_data = f"""
+    <speak version='1.0' xml:lang='ko-KR'><voice xml:lang='ko-KR' xml:gender='Female' name='ko-KR-JiMinNeural'>
+        {text}
+    </voice></speak>
+    """
+
+    response = requests.post(tts_endpoint, headers=headers, data=ssml_data)
+    
+    if response.status_code == 200:
+        # 오디오 파일 이름을 설정합니다.
+        file_name = 'response_audio.wav'
+        
+        # 파일이 저장될 경로를 설정합니다. settings.MEDIA_ROOT를 사용하여 정적 파일 경로를 설정합니다.
+        file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+        
+        # 파일을 생성하고 응답 데이터를 씁니다.
+        with open(file_path, "wb") as audio_file:
+            audio_file.write(response.content)
+        
+        # 클라이언트에 반환할 파일 이름을 반환합니다.
+        return file_name
+    
+    return None

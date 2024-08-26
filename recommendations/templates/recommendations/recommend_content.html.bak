@@ -1,0 +1,46 @@
+<!-- templates/recommendations/recommend_content.html -->
+<div class="recommendation-item" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-image: url('{{ image_path }}'); background-size: cover; background-position: center; background-repeat: no-repeat; margin-bottom: 20px; color: white; text-align: center;">
+  
+    <!-- 카테고리 텍스트가 박스의 왼쪽 위에 위치하도록 추가 -->
+    <div class="category-label" style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.6); color: white; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
+        {{ category }}
+    </div>
+  
+    <!-- 텍스트 내용이 가운데 정렬 -->
+    <div style="flex: 1; text-align: center;">
+        <h2 style="margin: 0 0 10px; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">{{ recommendations.name }}</h2>
+        <p style="margin: 0 0 5px; font-size: 16px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);"><strong>위치:</strong> {{ recommendations.location }}</p>
+        <p style="margin: 0; font-size: 16px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); line-height: 1.6;"><strong>리뷰:</strong> {{ recommendations.user_review }}</p>
+    </div>
+  
+    <!-- 닫기 버튼이 박스의 오른쪽 위에 위치하도록 설정 -->
+    <button class="close-btn" style="position: absolute; top: 10px; right: 10px; background-color: red; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px;">X</button>
+    <button id="showMapBtn" onclick="showDirections('{{ recommendations.location }}')" style="position: absolute; bottom: 10px; right: 10px; background-color: #4CAF50; color: white; padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);">
+        <i class="fas fa-map-marked-alt"></i> 길찾기
+    </button>
+  </div>
+
+<script>
+  function showDirections(destination) {
+      if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(function (position) {
+              const origin = position.coords.latitude + ',' + position.coords.longitude;
+              const mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+              window.open(mapUrl, '_blank');
+          }, function (error) {
+              console.error("Error getting location:", error);
+              alert("현재 위치를 가져올 수 없습니다. 기본 지도로 이동합니다.");
+              const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
+              window.open(mapUrl, '_blank');
+          });
+      } else {
+          alert("이 브라우저에서는 위치 정보를 지원하지 않습니다. 기본 지도로 이동합니다.");
+          const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
+          window.open(mapUrl, '_blank');
+      }
+  }
+
+  $(document).on('click', '.close-btn', function () {
+      $(this).closest('.recommendation-item').remove();
+  });
+</script>
