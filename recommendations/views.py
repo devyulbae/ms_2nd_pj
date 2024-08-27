@@ -4,6 +4,7 @@ import sys
 import os
 import json
 import requests
+import csv
 from openai import AzureOpenAI
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from django.shortcuts import render, redirect

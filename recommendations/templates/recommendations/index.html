@@ -146,7 +146,7 @@
             color: #FF758C;
         }
 
-
+        
         @media (max-width: 480px) {
             .container {
                 width: 100%;
@@ -179,7 +179,7 @@
 <body>
     <div class="container">
         <!-- 뒤로가기 버튼 -->
-        <button class="back-button" onclick="window.location.href='index.html'">
+        <button class="back-button" onclick="window.location.href='recommendations\\templates\\recommendations\\jeju_intro.html'">
             <i class="fas fa-home"></i>
         </button>
         
@@ -222,8 +222,17 @@
     </div>
 
     <script>
-        $(document).ready(function () {
-        // 위치 정보 가져오기
+        
+    </script>
+<script>
+    $(document).ready(function () {
+
+        // 저장 기능
+        function saveFunction() {
+            alert('저장 기능이 호출되었습니다!');
+        }
+
+        // 현재 위치 가져오기
         function getLocation() {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -231,12 +240,13 @@
                 alert("Geolocation is not supported by this browser.");
             }
         }
-
+        // 위치 보여주기
         function showPosition(position) {
             localStorage.setItem('userLatitude', position.coords.latitude);
             localStorage.setItem('userLongitude', position.coords.longitude);
         }
 
+        // 에러 메시지
         function showError(error) {
             console.log("Error: " + error.message);
         }
