@@ -3,12 +3,30 @@
 import sys
 import os
 import json
+import requests
 from openai import AzureOpenAI
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from link_image import link_image
+from django.views.decorators.csrf import csrf_exempt  # 추가된 import
+from link_image import link_image  # link_image 함수 가져오기
+from django.conf import settings  # settings 모듈 임포트 추가
+from dotenv import load_dotenv
+
+load_dotenv()
+# CSV에서 인스타그램 아이디를 불러오는 함수
+def load_instagram_ids(csv_path):
+    instagram_ids = {}
+    with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            location_name = row['name']
+            instagram_id = row['insta']
+            if instagram_id:  # 인스타그램 아이디가 있는 경우에만 추가
+                instagram_ids[location_name] = instagram_id
+    return instagram_ids
 
 def jeju_intro(request):
     categories = ["맛집", "카페", "해변", "관광지", "포토스팟"]
@@ -66,11 +84,11 @@ def get_recommendations(category, latitude, longitude, previous_recommendations,
     input_string = f"현재 나의 위치는 위도 {latitude}, 경도 {longitude}이다. {region_condition}  {category} 장소를 1개 알려줘. name은 장소이름이다. user_review는 사용자 리뷰를 보고 써달라. duration_time은 현재 나의 위치에서 자동차로 걸리는 시간이다.{exclude_condition}"
 
     # Azure OpenAI 설정
-    endpoint = os.getenv("ENDPOINT_URL", "https://ojo-ai-services2.openai.azure.com/")
-    deployment = os.getenv("DEPLOYMENT_NAME", "gpt-4o")
-    search_endpoint = os.getenv("SEARCH_ENDPOINT", "https://ojo-ai-search.search.windows.net")
-    search_key = os.getenv("SEARCH_KEY", "LAQvu2gep6KC8cgg7XfubtflXmPXmkV2BdERHjGx4mAzSeBkrPgB")
-    search_index = os.getenv("SEARCH_INDEX_NAME", "jeju")
+    endpoint = os.getenv("ENDPOINT_URL")
+    deployment = os.getenv("DEPLOYMENT_NAME")
+    search_endpoint = os.getenv("SEARCH_ENDPOINT")
+    search_key = os.getenv("SEARCH_KEY")
+    search_index = os.getenv("SEARCH_INDEX_NAME")
 
     token_provider = get_bearer_token_provider(
         DefaultAzureCredential(),
@@ -120,7 +138,7 @@ def get_recommendations(category, latitude, longitude, previous_recommendations,
         }
     )
 
-    completion_dict = json.loads(completion.to_json())
+    completion_dict = json.loads(completion.json())
     content = completion_dict['choices'][0]['message']['content']
     print(content)
     content = content.replace("json", "").replace("`", "").strip()
@@ -128,3 +146,74 @@ def get_recommendations(category, latitude, longitude, previous_recommendations,
     print(data)
     # 반환된 데이터가 단일 객체이므로 리스트가 아닌 단일 객체로 반환
     return data
+    
+@csrf_exempt
+def request_tts_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        text = data.get('text', '')
+        
+        # TTS 요청 후 반환된 파일 이름을 받습니다.
+        file_name = request_tts(text)
+        
+        if file_name:
+            # 클라이언트에 반환할 때 정적 파일 경로를 추가하여 반환합니다.
+            return JsonResponse({'file_name': file_name})
+        else:
+            return JsonResponse({'error': 'Failed to generate audio'}, status=500)
+
+def get_token():
+    # Azure TTS API에 액세스하기 위해 토큰을 요청합니다.
+    endpoint = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken"
+    api_key = os.getenv('TTS_API_Key')  # 여기에 실제 API 키를 입력하세요.
+
+    headers = {
+        "Ocp-Apim-Subscription-Key": api_key,
+    }
+    
+    response = requests.post(endpoint, headers=headers)
+    
+    if response.status_code == 200:
+        access_token = response.text
+        return access_token
+    else:
+        return ''
+
+def request_tts(text):
+    # Azure TTS API에 요청을 보내기 위해 액세스 토큰을 가져옵니다.
+    access_token = get_token()
+    if not access_token:
+        return None
+
+    tts_endpoint = "https://eastus.tts.speech.microsoft.com/cognitiveservices/v1"
+    headers = {
+        "Content-Type": "application/ssml+xml",
+        "User-Agent": "testForEducation",
+        "X-Microsoft-OutputFormat": "riff-24khz-16bit-mono-pcm",
+        "Authorization": f"Bearer {access_token}"
+    }
+
+    # SSML 데이터를 생성합니다.
+    ssml_data = f"""
+    <speak version='1.0' xml:lang='ko-KR'><voice xml:lang='ko-KR' xml:gender='Female' name='ko-KR-JiMinNeural'>
+        {text}
+    </voice></speak>
+    """
+
+    response = requests.post(tts_endpoint, headers=headers, data=ssml_data)
+    
+    if response.status_code == 200:
+        # 오디오 파일 이름을 설정합니다.
+        file_name = 'response_audio.wav'
+        
+        # 파일이 저장될 경로를 설정합니다. settings.MEDIA_ROOT를 사용하여 정적 파일 경로를 설정합니다.
+        file_path = os.path.join(settings.MEDIA_ROOT, file_name)
+        
+        # 파일을 생성하고 응답 데이터를 씁니다.
+        with open(file_path, "wb") as audio_file:
+            audio_file.write(response.content)
+        
+        # 클라이언트에 반환할 파일 이름을 반환합니다.
+        return file_name
+    
+    return None
