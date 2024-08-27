@@ -13,7 +13,9 @@ from link_image import link_image
 from django.views.decorators.csrf import csrf_exempt  # 추가된 import
 from link_image import link_image  # link_image 함수 가져오기
 from django.conf import settings  # settings 모듈 임포트 추가
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def jeju_intro(request):
     categories = ["맛집", "카페", "해변", "관광지", "포토스팟"]
@@ -71,11 +73,11 @@ def get_recommendations(category, latitude, longitude, previous_recommendations,
     input_string = f"현재 나의 위치는 위도 {latitude}, 경도 {longitude}이다. {region_condition}  {category} 장소를 1개 알려줘. name은 장소이름이다. user_review는 사용자 리뷰를 보고 써달라. duration_time은 현재 나의 위치에서 자동차로 걸리는 시간이다.{exclude_condition}"
 
     # Azure OpenAI 설정
-    endpoint = os.getenv("ENDPOINT_URL", "https://ojo-ai-services2.openai.azure.com/")
-    deployment = os.getenv("DEPLOYMENT_NAME", "gpt-4o")
-    search_endpoint = os.getenv("SEARCH_ENDPOINT", "https://ojo-ai-search.search.windows.net")
-    search_key = os.getenv("SEARCH_KEY", "LAQvu2gep6KC8cgg7XfubtflXmPXmkV2BdERHjGx4mAzSeBkrPgB")
-    search_index = os.getenv("SEARCH_INDEX_NAME", "jeju")
+    endpoint = os.getenv("ENDPOINT_URL")
+    deployment = os.getenv("DEPLOYMENT_NAME")
+    search_endpoint = os.getenv("SEARCH_ENDPOINT")
+    search_key = os.getenv("SEARCH_KEY")
+    search_index = os.getenv("SEARCH_INDEX_NAME")
 
     token_provider = get_bearer_token_provider(
         DefaultAzureCredential(),
@@ -152,7 +154,7 @@ def request_tts_view(request):
 def get_token():
     # Azure TTS API에 액세스하기 위해 토큰을 요청합니다.
     endpoint = "https://eastus.api.cognitive.microsoft.com/sts/v1.0/issueToken"
-    api_key = "288804c4918c4aa49f1285d49ea8df92"  # 여기에 실제 API 키를 입력하세요.
+    api_key = os.getenv('TTS_API_Key')  # 여기에 실제 API 키를 입력하세요.
 
     headers = {
         "Ocp-Apim-Subscription-Key": api_key,
