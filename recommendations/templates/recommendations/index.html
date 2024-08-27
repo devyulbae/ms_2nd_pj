@@ -37,6 +37,8 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
@@ -50,6 +52,30 @@
             letter-spacing: 2px;
             position: relative;
             padding-bottom: 10px;
+        }
+
+        .back-button, .save-button {
+            position: absolute;
+            top: 30px;
+            background-color: transparent;
+            border: none;
+            font-size: 2rem;
+            color: #AAAAAA;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-button {
+            left: 15px;
+        }
+
+        .save-button {
+            right: 15px;
+        }
+
+        .back-button:hover, .save-button:hover {
+            color: #FF758C;
         }
 
         .content-box {
@@ -82,6 +108,7 @@
             font-size: 1.5rem;
             transition: all 0.3s ease;
             font-family: 'Pretendard', sans-serif;
+            z-index: 1;
         }
 
         .button.active {
@@ -90,12 +117,12 @@
         }
 
         .button span {
-            font-size: 0.6rem;
+            font-size: 0.8rem;
             margin-top: 5px;
             font-family: 'Pretendard', sans-serif;
         }
 
-        .button:hover { /* hover 상태에서만 스타일 변경. */
+        .button:hover {
             background-color: rgba(0, 0, 0, 0.1);
             transform: translateY(-3px);
             border-radius: 50%;
@@ -105,7 +132,7 @@
             transition: all 0.3s ease;
         }
 
-        .button:hover i { /* hover 상태에서만 아이콘 스타일 변경 */
+        .button:hover i {
             color: #FF758C;
         }
 
@@ -114,10 +141,11 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            display: none; /* 초기에는 로딩 표시를 숨깁니다. */
+            display: none;
             font-size: 2rem;
             color: #FF758C;
         }
+
 
         @media (max-width: 480px) {
             .container {
@@ -142,7 +170,7 @@
             }
 
             .loading-overlay {
-                font-size: 1.5rem; /* 작은 화면에서는 로딩 아이콘 크기를 줄입니다. */
+                font-size: 1.5rem;
             }
         }
     </style>
@@ -150,6 +178,16 @@
 
 <body>
     <div class="container">
+        <!-- 뒤로가기 버튼 -->
+        <button class="back-button" onclick="window.location.href='index.html'">
+            <i class="fas fa-home"></i>
+        </button>
+        
+        <!-- 저장하기 버튼 -->
+        <button class="save-button" onclick="saveFunction()">
+            <i class="fas fa-save"></i>
+        </button>
+
         <h1>나만의 J</h1>
         <div class="content-box" id="results">
             <!-- 추천 결과가 이 박스에 추가됩니다 -->
@@ -173,7 +211,7 @@
             </button>
             <button class="button" data-category="포토스팟">
                 <i class="fas fa-camera-retro"></i>
-                <span>포토스팟</span>
+                <span style="font-size:0.75rem;"><strong>포토스팟</strong></span>
             </button>
         </div>
 
@@ -185,63 +223,66 @@
 
     <script>
         $(document).ready(function () {
-            // 위치 정보 가져오기
-            function getLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(showPosition, showError);
-                } else {
-                    alert("Geolocation is not supported by this browser.");
-                }
+        // 위치 정보 가져오기
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
             }
+        }
 
-            function showPosition(position) {
-                localStorage.setItem('userLatitude', position.coords.latitude);
-                localStorage.setItem('userLongitude', position.coords.longitude);
-            }
+        function showPosition(position) {
+            localStorage.setItem('userLatitude', position.coords.latitude);
+            localStorage.setItem('userLongitude', position.coords.longitude);
+        }
 
-            function showError(error) {
-                console.log("Error: " + error.message);
-            }
+        function showError(error) {
+            console.log("Error: " + error.message);
+        }
 
-            // 페이지 로드 시 위치 정보 요청
-            getLocation();
+        // 페이지 로드 시 위치 정보 요청
+        getLocation();
 
-            // 버튼 클릭 시 로딩 아이콘 표시 및 AJAX 요청 처리
-            $('.button').click(function () {
-                var button = $(this);
+        // 버튼 클릭 시 로딩 아이콘 표시 및 AJAX 요청 처리
+        $('.button').click(function () {
+            var button = $(this);
 
-                // 현재 버튼에 'active' 클래스를 추가
-                button.addClass('active');
+            // 현재 버튼에 'active' 클래스를 추가
+            button.addClass('active');
 
-                // 로딩 아이콘을 표시
-                $('.loading-overlay').fadeIn();
+            // 로딩 아이콘을 표시
+            $('.loading-overlay').fadeIn();
 
-                // 선택된 카테고리에 따른 동작 추가
-                var category = button.data('category');
-                var latitude = localStorage.getItem('userLatitude');
-                var longitude = localStorage.getItem('userLongitude');
+            // 선택된 카테고리에 따른 동작 추가
+            var category = button.data('category');
+            var latitude = localStorage.getItem('userLatitude');
+            var longitude = localStorage.getItem('userLongitude');
 
-                $.ajax({
-                    url: '/recommend/' + category + '/',
-                    method: 'GET',
-                    data: {
-                        latitude: latitude,
-                        longitude: longitude
-                    },
-                    success: function (response) {
-                        var newItem = $(response.html);
-                        $('#results').append(newItem);
-                        $('#results').scrollTop($('#results')[0].scrollHeight);
+            $.ajax({
+                url: '/recommend/' + category + '/',
+                method: 'GET',
+                data: {
+                    latitude: latitude,
+                    longitude: longitude
+                },
+                success: function (response) {
+                    var newItem = $(response.html);
+                    $('#results').append(newItem);
+                    $('#results').scrollTop($('#results')[0].scrollHeight);
 
-                        // 성공 시 로딩 아이콘을 숨기고, active 상태 제거
-                        $('.loading-overlay').fadeOut();
-                        button.removeClass('active');
-                    },
-                    error: function (xhr, status, error) {
-                        alert('추천 결과를 가져오는 중 오류가 발생했습니다.');
-                        // 실패 시에도 로딩 아이콘을 숨기고, active 상태 제거
-                        $('.loading-overlay').fadeOut();
-                        button.removeClass('active');
+                    // 성공 시 로딩 아이콘을 숨기고, active 상태 제거
+                    $('.loading-overlay').fadeOut();
+                    button.removeClass('active');
+                },
+                error: function (xhr, status, error) {
+                    alert('추천 결과를 가져오는 중 오류가 발생했습니다.');
+                    // 실패 시에도 로딩 아이콘을 숨기고, active 상태 제거
+                    $('.loading-overlay').fadeOut();
+                    button.removeClass('active');
+        function saveFunction() {
+            // 저장 기능을 여기에 추가하세요.
+            alert('저장 기능이 호출되었습니다!');
                     }
                 });
             });
@@ -265,4 +306,5 @@
         window.addEventListener('load', adjustContentBoxHeight);
     </script>
 </body>
+
 </html>

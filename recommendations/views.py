@@ -16,6 +16,17 @@ from django.conf import settings  # settings 모듈 임포트 추가
 from dotenv import load_dotenv
 
 load_dotenv()
+# CSV에서 인스타그램 아이디를 불러오는 함수
+def load_instagram_ids(csv_path):
+    instagram_ids = {}
+    with open(csv_path, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            location_name = row['name']
+            instagram_id = row['insta']
+            if instagram_id:  # 인스타그램 아이디가 있는 경우에만 추가
+                instagram_ids[location_name] = instagram_id
+    return instagram_ids
 
 def jeju_intro(request):
     categories = ["맛집", "카페", "해변", "관광지", "포토스팟"]
@@ -35,6 +46,8 @@ def recommend(request, category):
     recommendation_history = request.session.get(RECOMMENDATION_HISTORY_KEY, {})
     if category not in recommendation_history:
         recommendation_history[category] = []
+    # 인스타그램 아이디 로드
+    instagram_ids = load_instagram_ids('./jeju_list_0822.csv')
 
     recommendations = get_recommendations(category, latitude, longitude, recommendation_history[category], jeju_region)
     
@@ -42,6 +55,10 @@ def recommend(request, category):
     request.session[RECOMMENDATION_HISTORY_KEY] = recommendation_history
 
     image_path = link_image(recommendations['name'])
+
+    # 추천 장소에 인스타그램 아이디 추가
+    recommendations['instagram_id'] = instagram_ids.get(recommendations['name'])
+
 
     context = {
         'category': category,
