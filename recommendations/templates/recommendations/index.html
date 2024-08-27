@@ -146,6 +146,7 @@
             color: #FF758C;
         }
 
+
         @media (max-width: 480px) {
             .container {
                 width: 100%;
@@ -222,53 +223,53 @@
 
     <script>
         $(document).ready(function () {
-            // 위치 정보 가져오기
-            function getLocation() {
-                if (navigator.geolocation) {
-                    navigator.geolocation.getCurrentPosition(showPosition, showError);
-                } else {
-                    alert("Geolocation is not supported by this browser.");
-                }
+        // 위치 정보 가져오기
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(showPosition, showError);
+            } else {
+                alert("Geolocation is not supported by this browser.");
             }
+        }
 
-            function showPosition(position) {
-                localStorage.setItem('userLatitude', position.coords.latitude);
-                localStorage.setItem('userLongitude', position.coords.longitude);
-            }
+        function showPosition(position) {
+            localStorage.setItem('userLatitude', position.coords.latitude);
+            localStorage.setItem('userLongitude', position.coords.longitude);
+        }
 
-            function showError(error) {
-                console.log("Error: " + error.message);
-            }
+        function showError(error) {
+            console.log("Error: " + error.message);
+        }
 
-            // 페이지 로드 시 위치 정보 요청
-            getLocation();
+        // 페이지 로드 시 위치 정보 요청
+        getLocation();
 
-            // 버튼 클릭 시 로딩 아이콘 표시 및 AJAX 요청 처리
-            $('.button').click(function () {
-                var button = $(this);
+        // 버튼 클릭 시 로딩 아이콘 표시 및 AJAX 요청 처리
+        $('.button').click(function () {
+            var button = $(this);
 
-                // 현재 버튼에 'active' 클래스를 추가
-                button.addClass('active');
+            // 현재 버튼에 'active' 클래스를 추가
+            button.addClass('active');
 
-                // 로딩 아이콘을 표시
-                $('.loading-overlay').fadeIn();
+            // 로딩 아이콘을 표시
+            $('.loading-overlay').fadeIn();
 
-                // 선택된 카테고리에 따른 동작 추가
-                var category = button.data('category');
-                var latitude = localStorage.getItem('userLatitude');
-                var longitude = localStorage.getItem('userLongitude');
+            // 선택된 카테고리에 따른 동작 추가
+            var category = button.data('category');
+            var latitude = localStorage.getItem('userLatitude');
+            var longitude = localStorage.getItem('userLongitude');
 
-                $.ajax({
-                    url: '/recommend/' + category + '/',
-                    method: 'GET',
-                    data: {
-                        latitude: latitude,
-                        longitude: longitude
-                    },
-                    success: function (response) {
-                        var newItem = $(response.html);
-                        $('#results').append(newItem);
-                        $('#results').scrollTop($('#results')[0].scrollHeight);
+            $.ajax({
+                url: '/recommend/' + category + '/',
+                method: 'GET',
+                data: {
+                    latitude: latitude,
+                    longitude: longitude
+                },
+                success: function (response) {
+                    var newItem = $(response.html);
+                    $('#results').append(newItem);
+                    $('#results').scrollTop($('#results')[0].scrollHeight);
 
                         // 성공 시 로딩 아이콘을 숨기고, active 상태 제거
                         $('.loading-overlay').fadeOut();
@@ -279,9 +280,13 @@
                         // 실패 시에도 로딩 아이콘을 숨기고, active 상태 제거
                         $('.loading-overlay').fadeOut();
                         button.removeClass('active');
-        }
-                });
+                        function saveFunction() {
+            // 저장 기능을 여기에 추가하세요.
+                         alert('저장 기능이 호출되었습니다!');
+                    }
+                }
             });
+        });
 
             // hover에서 active 상태를 제거하는 동작 추가
             $('.button').mouseleave(function () {
