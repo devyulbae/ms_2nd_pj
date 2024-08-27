@@ -88,7 +88,7 @@ def get_recommendations(category, latitude, longitude, previous_recommendations,
 
     region_condition = f" {jeju_region}에 있는" if jeju_region != '전체' else "제주도에"
 
-    input_string = f"현재 나의 위치는 위도 {latitude}, 경도 {longitude}이다. {region_condition}  {category} 장소를 1개 알려줘. name은 장소이름이다. user_review는 사용자 리뷰를 보고 써달라. duration_time은 현재 나의 위치에서 자동차로 걸리는 시간이다.{exclude_condition}"
+    input_string = f"현재 나의 위치는 위도 {latitude}, 경도 {longitude}이다. {region_condition}  {category} 장소를 1개 알려줘. name은 장소이름이다. user_review는 사용자 리뷰를 보고 써달라. duration_time은 현재 나의 위치에서 자동차로 걸리는 시간이고 시간만 적어달라.{exclude_condition}"
 
     # Azure OpenAI 설정
     endpoint = os.getenv("ENDPOINT_URL")
