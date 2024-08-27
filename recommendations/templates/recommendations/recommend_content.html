@@ -205,7 +205,7 @@
                 <i class="fab fa-instagram"></i>
             </button>
             {% endif %}
-            <button id="ttsBtn" onclick="readText('{{ recommendations.user_review }}')" class="action-button" aria-label="리뷰 읽기">
+            <button id="ttsBtn" onclick="readText('다음 추천드릴 장소는 {{ recommendations.name }} 입니다. {{ recommendations.user_review }} 현재 위치에서 {{ recommendations.duration_time }} 소요됩니다.')" class="action-button" aria-label="리뷰 읽기">
                 <i class="fas fa-volume-up"></i>
             </button>
             <button id="showMapBtn" onclick="showDirections('{{ recommendations.location }}')" class="action-button" aria-label="길 찾기">
