@@ -21,3 +21,6 @@ def link_image(name):
             return '/static/image_not_found.jpg'
     
     return '/static/image_not_found.jpg'
+
+
+# z
