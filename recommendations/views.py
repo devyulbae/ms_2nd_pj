@@ -202,7 +202,7 @@ def request_tts(text):
 
     # SSML 데이터를 생성합니다.
     ssml_data = f"""
-    <speak version='1.0' xml:lang='ko-KR'><voice xml:lang='ko-KR' xml:gender='Female' name='ko-KR-JiMinNeural'>
+    <speak version='1.0' xml:lang='ko-KR'><voice xml:lang='ko-KR' xml:gender='Female' name='ko-KR-SeoHyeonNeural'>
         {text}
     </voice></speak>
     """
