@@ -125,7 +125,7 @@ def get_recommendations(category, latitude, longitude, previous_recommendations,
         }
     )
 
-    completion_dict = json.loads(completion.to_json())
+    completion_dict = json.loads(completion.json())
     content = completion_dict['choices'][0]['message']['content']
     print(content)
     content = content.replace("json", "").replace("`", "").strip()

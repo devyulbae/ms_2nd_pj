@@ -1,57 +1,240 @@
-<div class="recommendation-item" style="position: relative; display: flex; align-items: center; justify-content: center; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background-image: url('{{ image_path }}'); background-size: cover; background-position: center; background-repeat: no-repeat; margin-bottom: 20px; color: white; text-align: center;">
-  
-    <!-- 카테고리 텍스트가 박스의 왼쪽 위에 위치하도록 수정 -->
-    <div class="category-label" style="position: absolute; top: 10px; left: 10px; background-color: rgba(0, 0, 0, 0.6); color: white; padding: 5px; border-radius: 4px; font-weight: bold; height: 32px; display: flex; align-items: center; justify-content: center; width: auto; white-space: nowrap;">
-        {{ category }}
-    </div>
+<style>
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
     
-  
-    <!-- 텍스트 내용이 가운데 정렬 -->
-    <div style="flex: 1; text-align: center;">
-        <h2 style="margin: 0 0 10px; font-size: 24px; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);">{{ recommendations.name }}</h2>
-        <p style="margin: 0 0 5px; font-size: 16px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);"><strong>위치:</strong> {{ recommendations.location }}</p>
-        <p style="margin: 0; font-size: 16px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); line-height: 1.6;"><strong>리뷰:</strong> {{ recommendations.user_review }}</p>
-    </div>
-  
-    <!-- 읽어주기, 길찾기, 닫기 버튼이 오른쪽 위에 나란히 위치 -->
-    <div style="position: absolute; top: 10px; right: 10px; display: flex; gap: 5px;">
-        <button id="ttsBtn" onclick="readText('{{ recommendations.user_review }}')" style="background-color: #2196F3; color: white; padding: 5px; border: none; border-radius: 4px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-volume-up"></i>
-        </button>
-        <button id="showMapBtn" onclick="showDirections('{{ recommendations.location }}')" style="background-color: #4CAF50; color: white; padding: 5px; border: none; border-radius: 4px; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-            <i class="fas fa-map-marked-alt"></i>
-        </button>
-        <button class="close-btn" style="background-color: red; color: white; border: none; padding: 5px; cursor: pointer; border-radius: 4px; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-            X
-        </button>
-    </div>
+    @keyframes fadeOut {
+        from { opacity: 1; transform: translateY(0); }
+        to { opacity: 0; transform: translateY(-20px); }
+    }
 
-    <!-- Audio element to play TTS -->
-    <audio id="ttsAudio" controls style="display: none;"></audio>
+    /* Pretendard 폰트 설정 */
+    @font-face {
+        font-family: 'Pretendard';
+        src: url('/fonts/Pretendard-Regular.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+    }
+
+    .recommendation-item {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 20px;
+        background-color: white;
+        color: #333;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease-out;
+        font-family: 'Pretendard', sans-serif; /* 폰트 적용 */
+    }
+    
+    .recommendation-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .image-section {
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 비율 */
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        transition: transform 0.3s ease;
+    }
+    
+    .recommendation-item:hover .image-section {
+        transform: scale(1.05);
+    }
+    
+    .content-section {
+        padding: 25px;
+        font-family: 'Pretendard', sans-serif; /* 폰트 적용 */
+    }
+    
+    .category-label {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 25px;
+        font-weight: bold;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        font-family: 'Pretendard', sans-serif; /* 폰트 적용 */
+    }
+    
+    .recommendation-item:hover .category-label {
+        background-color: #2196F3;
+        transform: translateY(-3px);
+    }
+    
+    h2 {
+        font-family: 'Pretendard', sans-serif; /* 폰트 적용 */
+        font-size: 28px;
+        font-weight: bold;
+        color: #333;
+    }
+    
+    p {
+        font-family: 'Pretendard', sans-serif; /* 폰트 적용 */
+        margin: 0 0 10px;
+        font-size: 16px;
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .action-buttons {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        gap: 10px;
+    }
+    
+    .action-button {
+        background-color: rgba(255, 255, 255, 0.9);
+        color: #333;
+        padding: 8px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 18px;
+        font-family: 'Pretendard', sans-serif; /* 폰트 적용 */
+    }
+    
+    .action-button:hover {
+        transform: scale(1.1);
+        background-color: white;
+    }
+    
+    #showMapBtn:hover {
+        color: #4CAF50;
+    }
+    
+    #ttsBtn:hover {
+        color: #2196F3;
+    }
+    
+    .close-btn:hover {
+        color: #f44336;
+    }
+    
+    #ttsAudio {
+        margin-top: 15px;
+        width: 100%;
+    }
+
+    .new-recommendation-btn {
+        background-color: #FF9800;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 25px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-family: 'Pretendard', sans-serif; /* 폰트 적용 */
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .new-recommendation-btn:hover {
+        background-color: #F57C00;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 반응형 디자인 */
+    @media (max-width: 768px) {
+        .recommendation-item {
+            border-radius: 0;
+        }
+
+        .content-section {
+            padding: 15px;
+        }
+
+        h2 {
+            font-size: 24px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+
+        .action-button {
+            width: 36px;
+            height: 36px;
+            font-size: 16px;
+        }
+    }
+</style>
+
+<div id="recommendations-container">
+    <div class="recommendation-item">
+        <div class="image-section" style="background-image: url('{{ image_path }}');" role="img" aria-label="{{ recommendations.name }} 이미지"></div>
+        <div class="category-label" aria-label="카테고리">{{ category }}</div>
+        <div class="content-section">
+            <h2 id="recommendation-title">{{ recommendations.name }}</h2>
+            <p><strong>위치:</strong> <span id="recommendation-location">{{ recommendations.location }}</span></p>
+            <p><strong>리뷰:</strong> <span id="recommendation-review">{{ recommendations.user_review }}</span></p>
+            <audio id="ttsAudio"></audio>
+        </div>
+        <div class="action-buttons">
+            <button id="ttsBtn" onclick="readText('{{ recommendations.user_review }}')" class="action-button" aria-label="리뷰 읽기">
+                <i class="fas fa-volume-up"></i>
+            </button>
+            <button id="showMapBtn" onclick="showDirections('{{ recommendations.location }}')" class="action-button" aria-label="길 찾기">
+                <i class="fas fa-map-marked-alt"></i>
+            </button>
+            <button class="close-btn action-button" aria-label="추천 닫기">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
 </div>
 
 <script>
-  function showDirections(destination) {
-      if ("geolocation" in navigator) {
-          navigator.geolocation.getCurrentPosition(function (position) {
-              const origin = position.coords.latitude + ',' + position.coords.longitude;
-              const mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
-              window.open(mapUrl, '_blank');
-          }, function (error) {
-              console.error("Error getting location:", error);
-              alert("현재 위치를 가져올 수 없습니다. 기본 지도로 이동합니다.");
-              const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
-              window.open(mapUrl, '_blank');
-          });
-      } else {
-          alert("이 브라우저에서는 위치 정보를 지원하지 않습니다. 기본 지도로 이동합니다.");
-          const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
-          window.open(mapUrl, '_blank');
-      }
-  }
+    // 기존 JavaScript 코드 유지
+    function showDirections(destination) {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function (position) {
+                const origin = position.coords.latitude + ',' + position.coords.longitude;
+                const mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+                window.open(mapUrl, '_blank');
+            }, function (error) {
+                console.error("Error getting location:", error);
+                alert("현재 위치를 가져올 수 없습니다. 기본 지도로 이동합니다.");
+                const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
+                window.open(mapUrl, '_blank');
+            });
+        } else {
+            alert("이 브라우저에서는 위치 정보를 지원하지 않습니다. 기본 지도로 이동합니다.");
+            const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination)}`;
+            window.open(mapUrl, '_blank');
+        }
+    }
 
     function readText(text) {
-        fetch('/request-tts/', { // 실제 URL 패턴 사용
+        fetch('/request-tts/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -62,7 +245,7 @@
         .then(data => {
             if (data.file_name) {
                 const audio = document.getElementById('ttsAudio');
-                audio.src = `/media/${data.file_name}`; // 수정된 부분: 오디오 파일 경로를 올바르게 지정합니다.
+                audio.src = `/media/${data.file_name}`;
                 audio.style.display = 'block';
                 audio.play();
             } else {
@@ -75,14 +258,64 @@
         });
     }
 
-  $(document).on('click', '.close-btn', function () {
-      $(this).closest('.recommendation-item').remove();
-  });
-      document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.close-btn').forEach(button => {
-            button.addEventListener('click', function () {
-                this.closest('.recommendation-item').remove();
-            });
+    // 모든 X 버튼에 대해 이벤트 리스너를 추가 <규환 수정>
+    document.querySelectorAll('.close-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+        const item = this.closest('.recommendation-item');
+        item.style.animation = 'fadeOut 0.5s ease-out';
+        item.addEventListener('animationend', function() {
+            item.remove();
         });
     });
+});
+
+// HTML 구조 변경 (recommendations-container 바깥에 버튼 컨테이너 배치)
+// <div id="recommendations-container"></div>
+// <div id="recommendation-btn-container">
+//     <button class="new-recommendation-btn" onclick="getNewRecommendation()">계속 추천 받기</button>
+// </div>
+
+function getNewRecommendation() {
+    const currentCategory = document.querySelector('.category-label').textContent;
+
+    $.ajax({
+        url: '/recommend/' + currentCategory + '/',
+        method: 'GET',
+        data: {
+            latitude: localStorage.getItem('userLatitude'),
+            longitude: localStorage.getItem('userLongitude')
+        },
+        success: function (response) {
+            const newItem = $(response.html);
+
+            // 새로운 추천 항목 추가
+            $('#recommendations-container').append(newItem);
+
+            // 버튼 컨테이너가 중복 생성되지 않도록 기존 버튼 확인
+            if ($('#recommendation-btn-container').length > 1) {
+                $('#recommendation-btn-container').not(':first').remove();
+            }
+
+            // 부드러운 스크롤 효과로 새 항목으로 이동
+            $('html, body').animate({
+                scrollTop: newItem.offset().top
+            }, 500);
+
+            // 새로 추가된 닫기 버튼에 이벤트 리스너 추가
+            attachCloseButtonListeners();
+        },
+        error: function (xhr, status, error) {
+            alert('새로운 추천을 가져오는 중 오류가 발생했습니다.');
+        }
+    });
+}
+
+// 페이지 로드 시 초기화 코드 추가
+$(document).ready(function() {
+    if ($('#recommendation-btn-container').length > 1) {
+        $('#recommendation-btn-container').not(':first').remove();
+    }
+    attachCloseButtonListeners();
+});
+
 </script>

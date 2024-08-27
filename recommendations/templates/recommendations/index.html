@@ -1,4 +1,3 @@
-<!-- \templates\recommendations\index.html -->
 <!DOCTYPE html>
 <html lang="ko">
 
@@ -9,79 +8,142 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        @font-face {
+            font-family: 'Pretendard';
+            src: url('/fonts/Pretendard-Regular.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(to right, #40e0d0, #87ceeb);
+            font-family: 'Pretendard', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6DD5FA, #FF758C);
             padding: 0;
             min-height: 100vh;
-        }
-
-        .container {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .content-box {
-            width: 90%;
-            height: 75vh;
-            margin: 20px auto;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            overflow-y: auto;
-            scroll-behavior: smooth;
-            background-color: #f8f9fa;
-        }
-
-        @media (max-width: 768px) {
-            .content-box {
-                width: 95%;
-                height: 50vh;
-                padding: 5px;
-            }
-
-            .recommendation-item {
-                height: 150px;
-            }
-        }
-
-        .buttons {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 5px 0;
-            background-color: white;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: space-around;
-        }
-
-        .button {
-            margin: 0 5px;
-            padding: 10px;
-            background-color: white;
-            color: #333;
-            border: none;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 0.9em;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: pointer;
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 18%;
+            position: relative;
+        }
+
+        .container {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 95%;
+            max-width: 480px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #FF758C;
+            text-align: center;
+            margin: 25px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            font-family: 'Pretendard', sans-serif;
+            font-weight: bold;
+            letter-spacing: 2px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .content-box {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 15px;
+            margin-bottom: 10px;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .button {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            color: #333;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .button.active {
+            background-color: transparent;
+            color: #FF758C;
+        }
+
+        .button span {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .button:hover { /* hover 상태에서만 스타일 변경 */
+            background-color: rgba(0, 0, 0, 0.1);
+            transform: translateY(-3px);
+            border-radius: 50%;
         }
 
         .button i {
-            font-size: 24px; /* 아이콘 크기 설정 */
+            transition: all 0.3s ease;
         }
 
-        .button:hover {
-            background-color: #f0f0f0;
+        .button:hover i { /* hover 상태에서만 아이콘 스타일 변경 */
+            color: #FF758C;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none; /* 초기에는 로딩 표시를 숨깁니다. */
+            font-size: 2rem;
+            color: #FF758C;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+                margin: 15px 0;
+            }
+
+            .button {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2rem;
+            }
+
+            .button span {
+                font-size: 0.7rem;
+            }
+
+            .loading-overlay {
+                font-size: 1.5rem; /* 작은 화면에서는 로딩 아이콘 크기를 줄입니다. */
+            }
         }
     </style>
 </head>
@@ -95,24 +157,35 @@
         <div class="buttons">
             <button class="button" data-category="맛집">
                 <i class="fas fa-utensils"></i>
+                <span>맛집</span>
             </button>
             <button class="button" data-category="카페">
                 <i class="fas fa-coffee"></i>
+                <span>카페</span>
             </button>
             <button class="button" data-category="해변">
                 <i class="fas fa-umbrella-beach"></i>
+                <span>해변</span>
             </button>
             <button class="button" data-category="관광지">
                 <i class="fas fa-hiking"></i>
+                <span>관광지</span>
             </button>
             <button class="button" data-category="포토스팟">
                 <i class="fas fa-camera-retro"></i>
+                <span>포토스팟</span>
             </button>
+        </div>
+
+        <!-- 로딩 아이콘 -->
+        <div class="loading-overlay">
+            <i class="fas fa-spinner fa-spin"></i>
         </div>
     </div>
 
     <script>
         $(document).ready(function () {
+            // 위치 정보 가져오기
             function getLocation() {
                 if (navigator.geolocation) {
                     navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -133,8 +206,18 @@
             // 페이지 로드 시 위치 정보 요청
             getLocation();
 
+            // 버튼 클릭 시 로딩 아이콘 표시 및 AJAX 요청 처리
             $('.button').click(function () {
-                var category = $(this).data('category');
+                var button = $(this);
+
+                // 현재 버튼에 'active' 클래스를 추가
+                button.addClass('active');
+
+                // 로딩 아이콘을 표시
+                $('.loading-overlay').fadeIn();
+
+                // 선택된 카테고리에 따른 동작 추가
+                var category = button.data('category');
                 var latitude = localStorage.getItem('userLatitude');
                 var longitude = localStorage.getItem('userLongitude');
 
@@ -149,26 +232,37 @@
                         var newItem = $(response.html);
                         $('#results').append(newItem);
                         $('#results').scrollTop($('#results')[0].scrollHeight);
+
+                        // 성공 시 로딩 아이콘을 숨기고, active 상태 제거
+                        $('.loading-overlay').fadeOut();
+                        button.removeClass('active');
                     },
                     error: function (xhr, status, error) {
                         alert('추천 결과를 가져오는 중 오류가 발생했습니다.');
+                        // 실패 시에도 로딩 아이콘을 숨기고, active 상태 제거
+                        $('.loading-overlay').fadeOut();
+                        button.removeClass('active');
                     }
                 });
             });
+
+            // hover에서 active 상태를 제거하는 동작 추가
+            $('.button').mouseleave(function () {
+                $(this).removeClass('active');
+            });
         });
 
+        // 컨텐츠 박스 높이 조정
         function adjustContentBoxHeight() {
             const headerHeight = document.querySelector('h1').offsetHeight;
             const buttonHeight = document.querySelector('.buttons').offsetHeight;
-            const availableHeight = window.innerHeight - headerHeight - buttonHeight - 100; // 여백을 20px로 줄임
+            const containerHeight = document.querySelector('.container').offsetHeight;
+            const availableHeight = containerHeight - headerHeight - buttonHeight - 40;
             document.querySelector('.content-box').style.height = `${availableHeight}px`;
         }
 
         window.addEventListener('resize', adjustContentBoxHeight);
         window.addEventListener('load', adjustContentBoxHeight);
-
-
     </script>
 </body>
-
 </html>
