@@ -10,5 +10,8 @@ urlpatterns = [
     path('index/', views.index, name='index'),
     path('recommend/<str:category>/', views.recommend, name='recommend'),
     path('set_region/<str:region>/', views.set_jeju_region, name='set_jeju_region'),
-        path('request-tts/', views.request_tts_view, name='request_tts'),  # TTS ��������Ʈ �߰�
+        path('request-tts/', views.request_tts_view, name='request_tts'),  # TTS
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.TUTORIAL_URL, document_root=settings.TUTORIAL_ROOT)
