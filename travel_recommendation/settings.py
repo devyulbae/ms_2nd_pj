@@ -124,7 +124,7 @@ STATICFILES_DIRS = [
 
 # settings.py
 MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media'),
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # 튜토리얼 이미지
 TUTORIAL_URL = '/tutorial/'

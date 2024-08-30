@@ -200,7 +200,7 @@
         </div>
         <div class="action-buttons">
             <!-- 인스타그램 -->
-            {% if category == '카페' and recommendations.instagram_id != None %}
+            {% if category == '카페' and recommendations.instagram_id != 'None' and recommendations.instagram_id != None %}
             <button id="instagramBtn" onclick="window.open('https://www.instagram.com/{{ recommendations.instagram_id }}', '_blank')" class="action-button" aria-label="인스타">
                 <i class="fab fa-instagram"></i>
             </button>
